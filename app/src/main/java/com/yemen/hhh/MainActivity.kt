@@ -1,25 +1,17 @@
 package com.yemen.hhh
 
-import android.Manifest
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.batoulapps.adhan.Coordinates
 import com.batoulapps.adhan.CalculationMethod
 import com.google.android.gms.location.LocationServices
@@ -28,8 +20,6 @@ import com.yemen.hhh.ui.theme.المسجدTheme
 import java.util.*
 import android.location.Geocoder
 import android.media.MediaPlayer
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
 
 class MainActivity : ComponentActivity() {
     private var mediaPlayer: MediaPlayer? = null
@@ -42,30 +32,35 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             المسجدTheme {
+                // استدعاء الواجهة المشتركة
                 App(
                     initialCity = SettingsManager.loadCityConfig(this).toSharedConfig(),
                     initialReminders = SettingsManager.loadReminders(this).toSharedSettings(),
-                    onSaveCity = { SettingsManager.saveCityConfig(this, it.toAndroidConfig()) },
-                    onSaveReminders = { SettingsManager.saveReminders(this, it.toAndroidSettings()) },
+                    onSaveCity = { city: com.yemen.hhh.CityConfig -> 
+                        SettingsManager.saveCityConfig(this, city.toAndroidConfig()) 
+                    },
+                    onSaveReminders = { reminders: com.yemen.hhh.ReminderSettings -> 
+                        SettingsManager.saveReminders(this, reminders.toAndroidSettings()) 
+                    },
                     onPlayAdhan = { playAdhan() },
                     onStopAdhan = { stopAdhan() },
-                    onOpenUrl = { url ->
+                    onOpenUrl = { url: String ->
                         try {
                             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                         } catch (e: Exception) {
                             Toast.makeText(this, "لا يمكن فتح الرابط", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    onGetCurrentLocation = { callback ->
+                    onGetCurrentLocation = { callback: ((Double, Double, String) -> Unit) ->
                         getCurrentLocation(this, callback)
                     },
-                    formatTime = { ms -> 
+                    formatTime = { ms: Long -> 
                         SimpleDateFormat("hh:mm a", Locale("ar")).format(Date(ms))
                     },
-                    formatDate = { ms ->
+                    formatDate = { _: Long ->
                         SimpleDateFormat("EEEE، d MMMM yyyy", Locale("ar")).format(Date())
                     },
-                    formatHijri = { ms ->
+                    formatHijri = { _: Long ->
                         android.icu.text.SimpleDateFormat("d MMMM yyyy", android.icu.util.ULocale("ar@calendar=islamic-umalqura")).format(android.icu.util.Calendar.getInstance()) + " هـ"
                     }
                 )
@@ -139,7 +134,7 @@ object SettingsManager {
     }
 }
 
-// الكلاسات المحلية للأندرويد (للتوافق مع SharedPreferences)
+// الكلاسات المحلية للأندرويد
 data class CityConfig(val name: String, val coords: Coordinates, val isYemeni: Boolean, val method: CalculationMethod)
 data class ReminderSettings(val minutesBefore: Int, val use12Hour: Boolean, val whatsappLink: String = "", val adhanType: String = "", val suhoorReminder: Boolean = false, val suhoorMinutesBefore: Int = 0)
 
