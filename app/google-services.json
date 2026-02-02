@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "795852941745",
+    "firebase_url": "https://hhhh-87514-default-rtdb.firebaseio.com",
+    "project_id": "hhhh-87514",
+    "storage_bucket": "hhhh-87514.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795852941745:android:d039b18c6552a02d4e3590",
+        "android_client_info": {
+          "package_name": "com.yemen.hhh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbMH_1p0LQ6-l6RgGk3tUmaOVTj7kysZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
